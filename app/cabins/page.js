@@ -1,15 +1,22 @@
 import { Suspense } from "react";
 import CabinList from "../_components/CabinList";
 import Spinner from "../_components/Spinner";
+import Counter from "../_components/Counter";
+import Filter from "../_components/Filter";
+import ReservationReminder from "../_components/ReservationReminder";
+import { ReservationProvider } from "../_components/ReservationContext";
 
-// always in seconds. 3600 seconds = 1 hour. every hour, revalidate the page to get the latest cabin data from the API. This is a good balance between performance and freshness of data, as cabin availability may change frequently but we don't want to hit the API on every request.
 export const revalidate = 3600;
+// export const revalidate = 15;
 
 export const metadata = {
   title: "Cabins",
 };
 
-export default function Page() {
+export default async function Page({ searchParams }) {
+  const filter = searchParams?.capacity ?? "all";
+  console.log("Function Page Filter:", filter);
+
   return (
     <div>
       <h1 className="text-4xl mb-5 text-accent-400 font-medium">
@@ -24,12 +31,15 @@ export default function Page() {
         Welcome to paradise.
       </p>
 
-{/* Use react suspense to load cabin list and show spinner while loading. 
-Needs to be outside the component that does asynchronous work to avoid a blocking UI. */}
-
-      <Suspense fallback={<Spinner />}>
-        <CabinList />
-      </Suspense>
+      <div className="flex justify-end mb-8">
+        <Filter />
+      </div>
+      <ReservationProvider>
+        <ReservationReminder />
+        <Suspense fallback={<Spinner />} key={filter}>
+          <CabinList filter={filter} />
+        </Suspense>
+      </ReservationProvider>
     </div>
   );
 }

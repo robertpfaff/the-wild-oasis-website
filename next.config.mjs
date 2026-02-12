@@ -1,6 +1,6 @@
-/** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
+    qualities: [100, 50, 75, 80, 85],
     remotePatterns: [
       {
         protocol: "https",
@@ -9,8 +9,7 @@ const nextConfig = {
         pathname: "/storage/v1/object/public/cabin-images/**",
       },
     ],
-  },
-//  output: "export",
+  }
 };
 
 export default nextConfig;

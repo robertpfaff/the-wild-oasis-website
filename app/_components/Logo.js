@@ -9,7 +9,7 @@ function Logo() {
       <Image
         src="/logo.png"
         height="60"
-        quality={100}
+        quality={75}
         width="60"
         alt="The Wild Oasis logo"
       />
