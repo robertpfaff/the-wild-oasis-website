@@ -103,6 +103,10 @@ export async function getBookings(guestId) {
 }
 
 export async function getBookedDatesByCabinId(cabinId) {
+  if (!cabinId) {
+    console.warn("getBookedDatesByCabinId called with null/undefined cabinId");
+    return [];
+  }
   let today = new Date();
   today.setUTCHours(0, 0, 0, 0);
   today = today.toISOString();
@@ -143,6 +147,8 @@ export async function getSettings() {
     console.error(error);
     throw new Error("Settings could not be loaded");
   }
+
+  console.log("Data from getSettings:", data);
 
   return data;
 }
