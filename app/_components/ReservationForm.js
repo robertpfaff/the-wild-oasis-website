@@ -1,5 +1,8 @@
 "use client";
 
+// context api works only with client components, 
+// so we need to declare this as a client component
+
 import { useReservation } from "./ReservationContext";
 import Image from 'next/image';
 
