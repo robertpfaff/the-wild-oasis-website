@@ -9,7 +9,7 @@ export function middleware(request) {
 import { NextResponse } from "next/server";
 import { getToken } from "next-auth/jwt";
 
-export async function middleware(req) {
+export async function proxy(req) {
   const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
   if (!token) {
     // Not signed in, redirect to login

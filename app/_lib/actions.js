@@ -105,7 +105,9 @@ export async function updateBooking(formData) {
   if (error) throw new Error("Booking could not be updated");
 
   // 6) Revalidation
-  revalidatePath(`/account/reservations/edit/${bookingId}`);
+  const pathName = `/account/reservations/edit/${bookingId}`;
+  console.log("Revalidating path:", pathName);
+  revalidatePath(pathName);
   revalidatePath("/account/reservations");
 
   // 7) Redirecting

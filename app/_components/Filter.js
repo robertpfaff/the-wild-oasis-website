@@ -8,6 +8,7 @@ function Filter() {
   const pathname = usePathname();
 
   const activeFilter = searchParams.get("capacity") ?? "all";
+
   function handleFilter(filter) {
     const params = new URLSearchParams(searchParams);
     params.set("capacity", filter);

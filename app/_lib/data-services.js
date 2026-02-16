@@ -2,25 +2,24 @@ import { notFound } from "next/navigation";
 import { eachDayOfInterval } from "date-fns";
 import { supabase } from "./supabase";
 
-/////////////
 // GET
-
 export async function getCabin(id) {
+  console.log("getCabin called with id:", id, "type:", typeof id);
+  if (!id || id === "undefined" || isNaN(Number(id))) {
+    console.error("Invalid or missing cabin ID in getCabin:", id);
+    throw new Error("Invalid or missing cabin ID");
+  }
+
   const { data, error } = await supabase
     .from("cabins")
     .select("*")
     .eq("id", id)
     .single();
 
-    console.log("DS RESULTS: GET CABIN", id, ":", data);
-
-  // For testing
-  // await new Promise((res) => setTimeout(res, 2000));
-
   if (error) {
     console.error(error);
     notFound();
-  }
+  };
 
   return data;
 }
@@ -70,14 +69,14 @@ export async function getGuest(email) {
 }
 
 export async function getBooking(id) {
-  const { data, error, count } = await supabase
+  const { data, error } = await supabase
     .from("bookings")
     .select("*")
     .eq("id", id)
     .single();
 
   if (error) {
-    console.error(error);
+    console.error("Booking DATA:", data, "Booking ERROR:", error);
     throw new Error("Booking could not get loaded");
   }
 
@@ -87,12 +86,13 @@ export async function getBooking(id) {
 export async function getBookings(guestId) {
   const { data, error, count } = await supabase
     .from("bookings")
-    // We actually also need data on the cabins as well. But let's ONLY take the data that we actually need, in order to reduce downloaded data.
     .select(
-      "id, created_at, startDate, endDate, numNights, numGuests, totalPrice, guestId, cabinId, cabins(name, image)"
+      "id, created_at, startDate, endDate, numNights, numGuests, totalPrice, guestID, cabinID, cabins(name, image)"
     )
-    .eq("guestId", guestId)
+    .eq("guestID", guestId)
     .order("startDate");
+
+    console.log("DS RESULTS: GET BOOKINGS DATA" , data);
 
   if (error) {
     console.error(error);
