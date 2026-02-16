@@ -8,20 +8,20 @@ import { redirect } from "next/navigation";
 
 export async function updateGuest(formData) {
   const session = await auth();
-  console.log("FORMDATA in updateGuest action:", formData);
   if (!session) throw new Error("You must be logged in");
 
+  const nationalID = formData.get("nationalID");
   const [nationality, countryFlag] = formData.get("nationality").split("%");
 
-  const updateData = { nationality, countryFlag };
-  console.log("Update data being sent to Supabase:", updateData);
+  if (!/^[a-zA-Z0-9]{6,12}$/.test(nationalID))
+    throw new Error("Please provide a valid national ID");
+
+  const updateData = { nationality, countryFlag, nationalID };
 
   const { data, error } = await supabase
     .from("guests")
     .update(updateData)
     .eq("id", session.user.guestId);
-
-    console.log("Supabase update result:", { data, error });
 
   if (error) throw new Error("Guest could not be updated");
 
@@ -34,7 +34,7 @@ export async function createBooking(bookingData, formData) {
 
   const newBooking = {
     ...bookingData,
-    guestId: session.user.guestId,
+    guestID: session.user.guestId,
     numGuests: Number(formData.get("numGuests")),
     observations: formData.get("observations").slice(0, 1000),
     extrasPrice: 0,
@@ -44,11 +44,16 @@ export async function createBooking(bookingData, formData) {
     status: "unconfirmed",
   };
 
+
   const { error } = await supabase.from("bookings").insert([newBooking]);
 
-  if (error) throw new Error("Booking could not be created");
+  if (error) {
+    // Log the full Supabase error for debugging
+    console.error("Supabase booking insert error:", error);
+    throw new Error(`Booking could not be created: ${error.message || error}`);
+  }
 
-  revalidatePath(`/cabins/${bookingData.cabinId}`);
+  revalidatePath(`/cabins/${bookingData.cabinID}`);
 
   redirect("/cabins/thankyou");
 }
@@ -105,9 +110,7 @@ export async function updateBooking(formData) {
   if (error) throw new Error("Booking could not be updated");
 
   // 6) Revalidation
-  const pathName = `/account/reservations/edit/${bookingId}`;
-  console.log("Revalidating path:", pathName);
-  revalidatePath(pathName);
+  revalidatePath(`/account/reservations/edit/${bookingId}`);
   revalidatePath("/account/reservations");
 
   // 7) Redirecting

@@ -4,9 +4,16 @@ import { getBooking, getCabin } from "@/app/_lib/data-services";
 
 export default async function Page({ params }) {
   const { bookingId } = await params;
+  console.log("Received bookingId:", bookingId, "type:", typeof bookingId);
+  if (!bookingId || bookingId === "undefined" || isNaN(Number(bookingId))) {
+    console.error("Invalid booking ID:", bookingId);
+    return <p className="text-red-500">Invalid booking ID.</p>;
+  }
   const booking = await getBooking(bookingId);
+  console.log("Booking object:", booking);
   const { numGuests, observations, cabinID } = booking;
   const { maxCapacity } = await getCabin(cabinID);
+  console.log("Booking Maxcapacity:", maxCapacity, "Maxcapacity type:", typeof maxCapacity);
 
   return (
     <div>

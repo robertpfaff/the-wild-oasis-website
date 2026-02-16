@@ -20,7 +20,7 @@ function ReservationForm({ cabin, user }) {
     endDate,
     numNights,
     cabinPrice,
-    cabinID: id, // Use cabinID to match bookings table foreign key
+    cabinID: id,
   };
 
   const createBookingWithData = createBooking.bind(null, bookingData);
@@ -87,7 +87,8 @@ function ReservationForm({ cabin, user }) {
               Start by selecting dates
             </p>
           ) : (
-            <SubmitButton pendingLabel="Reserving...">Reserve now</SubmitButton>
+            <SubmitButton pendingLabel="Reserving...
+            "> Reserve now</SubmitButton>
           )}
         </div>
       </form>

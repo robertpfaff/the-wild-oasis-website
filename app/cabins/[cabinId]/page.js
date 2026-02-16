@@ -29,9 +29,9 @@ export async function generateStaticParams() {
 export default async function Page({ params }) {
   const resolvedParams = await params;
   const { cabinId } = resolvedParams;
-  if (!cabinId) {
-    // Optionally handle error or redirect
-    throw new Error("Cabin ID is required");
+  if (!cabinId || cabinId === "thankyou" || isNaN(Number(cabinId))) {
+    // Render Thankyou component for special route
+    return <Thankyou />;
   }
   const cabin = await getCabin(cabinId);
   const settings = await getSettings(cabinId);

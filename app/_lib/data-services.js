@@ -4,8 +4,8 @@ import { supabase } from "./supabase";
 
 // GET
 export async function getCabin(id) {
-  console.log("getCabin called with id:", id, "type:", typeof id);
-  if (!id || id === "undefined" || isNaN(Number(id))) {
+
+  if (!id) {
     console.error("Invalid or missing cabin ID in getCabin:", id);
     throw new Error("Invalid or missing cabin ID");
   }
