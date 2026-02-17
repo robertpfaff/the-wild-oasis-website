@@ -44,7 +44,6 @@ export async function createBooking(bookingData, formData) {
     status: "unconfirmed",
   };
 
-
   const { error } = await supabase.from("bookings").insert([newBooking]);
 
   if (error) {
