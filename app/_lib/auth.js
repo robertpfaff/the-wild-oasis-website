@@ -10,29 +10,23 @@ const authConfig = {
     }),
   ],
   callbacks: {
-    authorized({ auth, request }) {
-      return !!auth?.user;
-    },
-    async signIn({ user, account, profile }) {
-      try {
-        const existingGuest = await getGuest(user.email);
-
-        if (!existingGuest)
-          await createGuest({ email: user.email, fullName: user.name });
-
-        return true;
-      } catch {
-        return false;
-      }
-    },
-    async session({ session, user }) {
-      const guest = await getGuest(session.user.email);
-      session.user.guestId = guest.id;
-      return session;
-    },
+  authorized({ auth, request }) {
+    return !!auth?.user;
   },
-  pages: {
-    signIn: "/login",
+  async signIn({ user, account, profile }) {
+    // ...existing code...
+  },
+  async session({ session, user }) {
+    // ...existing code...
+  },
+  redirect({ url, baseUrl }) {
+    // If url is a relative path, allow NextAuth to handle callbackUrl logic
+    if (url.startsWith("/")) return `${baseUrl}${url}`;
+    // If url is a full URL and matches your baseUrl, allow it
+    if (url.startsWith(baseUrl)) return url;
+    // Otherwise, fallback to baseUrl (homepage)
+    return baseUrl;
+  },
   },
 };
 
