@@ -2,12 +2,14 @@ import { NextResponse } from "next/server";
 import { getToken } from "next-auth/jwt";
 
 export default async function proxy(request) {
-  const token = await getToken({ req: request, secret: process.env.NEXTAUTH_SECRET });
+  const token = await getToken({
+    req: request,
+    secret: process.env.NEXTAUTH_SECRET,
+    cookieName: "__Secure-authjs.session-token",
+  });
   if (!token) {
-    // Not signed in, redirect to login
     return NextResponse.redirect(new URL("/login", request.url));
   }
-  // Signed in, continue
   return NextResponse.next();
 }
 
