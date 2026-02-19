@@ -7,6 +7,7 @@ export async function middleware(request) {
     secret: process.env.NEXTAUTH_SECRET,
     cookieName: "__Secure-authjs.session-token",
   });
+  // debugging log to check the token value
   console.log("MIDDLEWARE TOKEN:", token); // Add this line
   if (!token) {
     return NextResponse.redirect(new URL("/login", request.url));
