@@ -19,6 +19,7 @@ const authConfig = {
   async session({ session, user }) {
     // ...existing code...
   },
+  // Custom redirect callback to ensure only relative paths or same-origin URLs are allowed
   redirect({ url, baseUrl }) {
     // If url is a relative path, allow NextAuth to handle callbackUrl logic
     if (url.startsWith("/")) return `${baseUrl}${url}`;
