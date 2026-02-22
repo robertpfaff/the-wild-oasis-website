@@ -1,13 +1,17 @@
 import { NextResponse } from "next/server";
 
-export async function proxy(request) {
+export function proxy(request) {
   const { pathname } = request.nextUrl;
   
   // Only protect /account routes
   if (pathname.startsWith("/account")) {
-    const sessionCookie = request.cookies.get("authjs.session-token") || request.cookies.get("__Secure-authjs.session-token");
+    // Check for NextAuth session token (handles both http and https)
+    const sessionToken = 
+      request.cookies.get("authjs.session-token")?.value ||
+      request.cookies.get("__Secure-authjs.session-token")?.value;
     
-    if (!sessionCookie) {
+    if (!sessionToken) {
+      // Redirect to login if no session
       return NextResponse.redirect(new URL("/login", request.url));
     }
   }

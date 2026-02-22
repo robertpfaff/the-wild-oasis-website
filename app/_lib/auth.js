@@ -13,6 +13,7 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
     strategy: "jwt",
   },
   trustHost: true,
+  basePath: "/api/auth",
   callbacks: {
     async signIn({ user, account, profile }) {
       // Add your sign-in logic here
@@ -27,16 +28,22 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
         });
 
         return true;
-      } catch {
+      } catch (error) {
+        console.error("SignIn callback error:", error);
         return false;
       }
     },
-    async session({ session, user }) {
+    async session({ session }) {
       // Add guest info to session
-      const guest = await getGuest(session.user.email);
-      
-      if (guest) {
-        session.user.guestId = guest.id;
+      try {
+        const guest = await getGuest(session.user.email);
+        
+        if (guest) {
+          session.user.guestId = guest.id;
+        }
+      } catch (error) {
+        console.error("Session callback error:", error);
+        // Continue even if guest lookup fails
       }
       
       return session;

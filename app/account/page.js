@@ -1,4 +1,5 @@
 import { auth } from "@/app/_lib/auth";
+import { redirect } from "next/navigation";
 
 export const metadata = {
   title: "Guest area",
@@ -6,6 +7,11 @@ export const metadata = {
 
 export default async function Page() {
   const session = await auth();
+  
+  if (!session) {
+    redirect("/login");
+  }
+  
   const firstName = session?.user?.name.split(" ").at(0);
 
   return (
