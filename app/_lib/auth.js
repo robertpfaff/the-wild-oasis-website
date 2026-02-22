@@ -12,8 +12,6 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
   session: {
     strategy: "jwt",
   },
-  trustHost: true,
-  basePath: "/api/auth",
   callbacks: {
     async signIn({ user, account, profile }) {
       // Add your sign-in logic here
@@ -34,18 +32,8 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
       }
     },
     async session({ session }) {
-      // Add guest info to session
-      try {
-        const guest = await getGuest(session.user.email);
-        
-        if (guest) {
-          session.user.guestId = guest.id;
-        }
-      } catch (error) {
-        console.error("Session callback error:", error);
-        // Continue even if guest lookup fails
-      }
-      
+      // Don't fetch guest data during session - it creates circular dependencies
+      // The account pages will fetch guest data separately if needed
       return session;
     },
   },

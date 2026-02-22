@@ -1,6 +1,6 @@
 import ReservationList from "@/app/_components/ReservationList";
 import { auth } from "@/app/_lib/auth";
-import { getBookings } from "@/app/_lib/data-services";
+import { getBookings, getGuest } from "@/app/_lib/data-services";
 
 export const metadata = {
   title: "Reservations",
@@ -8,8 +8,13 @@ export const metadata = {
 
 export default async function Page() {
   const session = await auth();
-  const bookings = await getBookings(session.user.guestId);
-  console.log("getBookings guestId", session.user.guestId, ":", bookings);
+  
+  // Get the guest ID from database using email
+  const guest = await getGuest(session.user.email);
+  const guestId = guest?.id;
+  
+  const bookings = await getBookings(guestId);
+  console.log("getBookings guestId", guestId, ":", bookings);
 
   return (
     <div>
