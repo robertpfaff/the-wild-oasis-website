@@ -1,39 +1,47 @@
 import NextAuth from "next-auth";
-import Google from "next-auth/providers/google";
+import GoogleProvider from "next-auth/providers/google";
 import { createGuest, getGuest } from "./data-services";
 
-const authConfig = {
+export const { auth, handlers, signIn, signOut } = NextAuth({
   providers: [
-    Google({
+    GoogleProvider({
       clientId: process.env.AUTH_GOOGLE_ID,
       clientSecret: process.env.AUTH_GOOGLE_SECRET,
     }),
   ],
   callbacks: {
-  authorized({ auth, request }) {
-    return !!auth?.user;
-  },
-  async signIn({ user, account, profile }) {
-    // ...existing code...
-  },
-  async session({ session, user }) {
-    // ...existing code...
-  },
-  // Custom redirect callback to ensure only relative paths or same-origin URLs are allowed
-  redirect({ url, baseUrl }) {
-    // If url is a relative path, allow NextAuth to handle callbackUrl logic
-    if (url.startsWith("/")) return `${baseUrl}${url}`;
-    // If url is a full URL and matches your baseUrl, allow it
-    if (url.startsWith(baseUrl)) return url;
-    // Otherwise, fallback to baseUrl (homepage)
-    return baseUrl;
-  },
-  },
-};
+    async signIn({ user, account, profile }) {
+      // Add your sign-in logic here
+      try {
+        const existingGuest = await getGuest(user.email);
 
-export const {
-  auth,
-  signIn,
-  signOut,
-  handlers: { GET, POST },
-} = NextAuth(authConfig);
+        if (existingGuest) return true;
+
+        await createGuest({
+          email: user.email,
+          fullName: user.name,
+        });
+
+        return true;
+      } catch {
+        return false;
+      }
+    },
+    async session({ session, user }) {
+      // Add guest info to session
+      const guest = await getGuest(session.user.email);
+      
+      if (guest) {
+        session.user.guestId = guest.id;
+      }
+      
+      return session;
+    },
+  },
+  pages: {
+    signIn: "/login",
+  },
+});
+
+export const GET = handlers.GET;
+export const POST = handlers.POST;

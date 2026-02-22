@@ -83,13 +83,14 @@ export async function getBooking(id) {
   return data;
 }
 
-export async function getBookings(guestId) {
+export async function getBookings(guestID) {
+  console.log("DS getBookings called with guestID:", guestID);
   const { data, error, count } = await supabase
     .from("bookings")
     .select(
       "id, created_at, startDate, endDate, numNights, numGuests, totalPrice, guestID, cabinID, cabins(name, image)"
     )
-    .eq("guestID", guestId)
+    .eq("guestID", guestID)
     .order("startDate");
 
     console.log("DS RESULTS: GET BOOKINGS DATA" , data);
@@ -102,9 +103,9 @@ export async function getBookings(guestId) {
   return data;
 }
 
-export async function getBookedDatesByCabinId(cabinId) {
-  if (!cabinId) {
-    console.warn("getBookedDatesByCabinId called with null/undefined cabinId");
+export async function getBookedDatesByCabinId(cabinID) {
+  if (!cabinID) {
+    console.warn("getBookedDatesByCabinId called with null/undefined cabinID");
     return [];
   }
   let today = new Date();
@@ -115,10 +116,10 @@ export async function getBookedDatesByCabinId(cabinId) {
   const { data, error } = await supabase
     .from("bookings")
     .select("*")
-    .eq("cabinID", cabinId)
+    .eq("cabinID", cabinID)
     .or(`startDate.gte.${today},status.eq.checked-in`);
 
-    console.log("REVISED: DS RESULTS: GET BOOKINGS for cabinId", cabinId, ":", data);
+    console.log("REVISED: DS RESULTS: GET BOOKINGS for cabinID", cabinID, ":", data);
 
   if (error) {
     console.error(error);

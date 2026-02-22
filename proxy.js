@@ -1,14 +1,8 @@
 import { NextResponse } from "next/server";
 import { getToken } from "next-auth/jwt";
 
-export async function middleware(request) {
-  const token = await getToken({
-    req: request,
-    secret: process.env.NEXTAUTH_SECRET,
-    cookieName: "__Secure-authjs.session-token",
-  });
-  // debugging log to check the token value
-  console.log("MIDDLEWARE TOKEN:", token); // Add this line
+export async function proxy(request) {
+  const token = await getToken({ req: request, secret: process.env.NEXTAUTH_SECRET });
   if (!token) {
     return NextResponse.redirect(new URL("/login", request.url));
   }

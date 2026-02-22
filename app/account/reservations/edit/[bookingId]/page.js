@@ -1,20 +1,21 @@
 import SubmitButton from "@/app/_components/SubmitButton";
 import { updateBooking } from "@/app/_lib/actions";
 import { getBooking, getCabin } from "@/app/_lib/data-services";
+import { auth } from "@/app/_lib/auth";
+import { redirect } from "next/navigation";
 
 export default async function Page({ params }) {
+  const session = await auth();
+  if (!session) {
+    redirect("/login");
+  }
   const { bookingId } = await params;
-  console.log("Received bookingId:", bookingId, "type:", typeof bookingId);
   if (!bookingId || bookingId === "undefined" || isNaN(Number(bookingId))) {
-    console.error("Invalid booking ID:", bookingId);
     return <p className="text-red-500">Invalid booking ID.</p>;
   }
   const booking = await getBooking(bookingId);
-  console.log("Booking object:", booking);
   const { numGuests, observations, cabinID } = booking;
   const { maxCapacity } = await getCabin(cabinID);
-  console.log("Booking Maxcapacity:", maxCapacity, "Maxcapacity type:", typeof maxCapacity);
-
   return (
     <div>
       <h2 className="font-semibold text-2xl text-accent-400 mb-7">
