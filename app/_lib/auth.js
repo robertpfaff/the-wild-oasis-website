@@ -9,6 +9,10 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
       clientSecret: process.env.AUTH_GOOGLE_SECRET,
     }),
   ],
+  session: {
+    strategy: "jwt",
+  },
+  trustHost: true,
   callbacks: {
     async signIn({ user, account, profile }) {
       // Add your sign-in logic here
